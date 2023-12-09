@@ -9,7 +9,8 @@ defmodule GithubUserSearchApp.Application do
   def start(_type, _args) do
     children = [
       GithubUserSearchAppWeb.Telemetry,
-      {DNSCluster, query: Application.get_env(:github_user_search_app, :dns_cluster_query) || :ignore},
+      {DNSCluster,
+       query: Application.get_env(:github_user_search_app, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: GithubUserSearchApp.PubSub},
       # Start the Finch HTTP client for sending emails
       {Finch, name: GithubUserSearchApp.Finch},

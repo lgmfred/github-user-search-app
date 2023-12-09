@@ -1,4 +1,6 @@
 defmodule GithubUserSearchAppWeb.Search do
+  @moduledoc false
+
   use GithubUserSearchAppWeb, :live_view
 
   def mount(_params, _session, socket) do
