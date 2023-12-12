@@ -71,7 +71,7 @@ defmodule GithubUserSearchAppWeb.Search do
             <div class="flex gap-3 items-center">
               <.icon name="hero-building-office-2-solid" />
               <.link navigate={"https://github.com/#{@user.login}"}>
-                <%= "@#{@user.login}" %>
+                <%= "@#{@user.company}" %>
               </.link>
             </div>
           </div>
@@ -84,7 +84,7 @@ defmodule GithubUserSearchAppWeb.Search do
   def search_form(assigns) do
     ~H"""
     <div class="bg-[#FEFEFE]">
-      <.form for={@form} class="flex items-center">
+      <.form for={@form} phx-submit="search-user" class="flex items-center">
         <.icon name="hero-magnifying-glass-solid" />
         <.input field={@form[:username]} autocomplete="off" placeholder="Search GitHub username…" />
         <.button>
@@ -93,5 +93,17 @@ defmodule GithubUserSearchAppWeb.Search do
       </.form>
     </div>
     """
+  end
+
+  def handle_event("search-user", %{"username" => username}, socket) do
+    case UsersApi.fetch_user(username) do
+      {:ok, user} ->
+        form = to_form(%{"username" => ""})
+        {:noreply, assign(socket, user: user, form: form)}
+
+      {:error, _error} ->
+        form = to_form(%{"username" => ""})
+        {:noreply, assign(socket, form: form)}
+    end
   end
 end
