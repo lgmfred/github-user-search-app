@@ -1,4 +1,4 @@
-defmodule GithubUserSearchApp.UsersApis do
+defmodule GithubUserSearchApp.UsersApi do
   @moduledoc """
   An implementation of a GithubUserSearchApp.UserApiBehaviour
   """
@@ -33,7 +33,7 @@ defmodule GithubUserSearchApp.UsersApis do
 
       {:error, exception} ->
         Logger.error("[GitHub API] Exception: #{inspect(exception)}")
-        {:error, exception}
+        {:error, :exception}
     end
   end
 end
