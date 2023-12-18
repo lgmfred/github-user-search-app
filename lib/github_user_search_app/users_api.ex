@@ -1,39 +1,15 @@
-defmodule GithubUserSearchApp.UsersApi do
-  @moduledoc """
-  An implementation of a GithubUserSearchApp.UserApiBehaviour
-  """
-  require Logger
+defmodule GithubUserSearchApp.UsersAPI do
+  @moduledoc false
 
-  alias GithubUserSearchApp.UserApiBehaviour
-  @behaviour UserApiBehaviour
+  @callback fetch_user(binary()) :: {:ok, map()} | {:error, binary()}
 
-  @base_url "api.github.com"
+  def fetch_user(username), do: impl().fetch_user(username)
 
-  @impl UserApiBehaviour
-
-  @spec fetch_user(binary()) :: {:ok, map()} | {:error, binary()}
-
-  def fetch_user(username) when is_binary(username) do
-    url = "https://#{@base_url}/users/#{username}"
-    Logger.info("[GitHub API] GET #{url}")
-
-    build_req = Finch.build(:get, url)
-
-    case Finch.request(build_req, GithubUserSearchApp.Finch) do
-      {:ok, %Finch.Response{status: 200, body: body}} ->
-        response = Jason.decode!(body, keys: :atoms)
-        Logger.info("[GitHub API] Success: #{inspect(response)}")
-
-        {:ok, response}
-
-      {:ok, %Finch.Response{status: 404, body: _body}} ->
-        Logger.warning("[GitHub API] Error 404: User Not found")
-
-        {:error, :user_not_found}
-
-      {:error, exception} ->
-        Logger.error("[GitHub API] Exception: #{inspect(exception)}")
-        {:error, :exception}
-    end
+  defp impl do
+    Application.get_env(
+      :github_user_search_app,
+      :users_api_client_module,
+      GithubUserSearchApp.ExternalUsersAPI
+    )
   end
 end

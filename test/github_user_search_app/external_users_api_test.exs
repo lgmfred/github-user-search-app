@@ -1,8 +1,10 @@
-defmodule GithubUserSearchApp.UsersApiTest do
+defmodule GithubUserSearchApp.ExternalUsersAPITest do
   use ExUnit.Case, async: true
 
-  alias GithubUserSearchApp.UsersApiMock
+  alias GithubUserSearchApp.UsersAPI
   import Mox
+
+  @mock_module Application.compile_env(:github_user_search_app, :users_api_client_module)
 
   setup :verify_on_exit!
 
@@ -16,32 +18,32 @@ defmodule GithubUserSearchApp.UsersApiTest do
         blog: "https://ayikoyo.com"
       }
 
-      expect(UsersApiMock, :fetch_user, fn username ->
+      expect(@mock_module, :fetch_user, fn username ->
         assert username == "lgmfred"
 
         {:ok, response}
       end)
 
-      assert {:ok, ^response} = users_api_client().fetch_user("lgmfred")
+      assert {:ok, ^response} = UsersAPI.fetch_user("lgmfred")
     end
 
     test "error: fetch_user, returns {:error, :user_not_found} for non-existing user" do
-      expect(UsersApiMock, :fetch_user, fn username ->
+      expect(@mock_module, :fetch_user, fn username ->
         assert username == "lgmfred-le-meilleur"
 
         {:error, :user_not_found}
       end)
 
-      assert {:error, :user_not_found} = users_api_client().fetch_user("lgmfred-le-meilleur")
+      assert {:error, :user_not_found} = UsersAPI.fetch_user("lgmfred-le-meilleur")
     end
 
     test "error: fetch_user, returns {:error, :exception} during fetch process" do
-      expect(UsersApiMock, :fetch_user, fn username ->
+      expect(@mock_module, :fetch_user, fn username ->
         assert username == "exception_user"
         {:error, :exception}
       end)
 
-      assert {:error, :exception} = users_api_client().fetch_user("exception_user")
+      assert {:error, :exception} = UsersAPI.fetch_user("exception_user")
     end
   end
 end
