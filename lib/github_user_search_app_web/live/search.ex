@@ -2,10 +2,11 @@ defmodule GithubUserSearchAppWeb.Search do
   @moduledoc false
 
   use GithubUserSearchAppWeb, :live_view
-  alias GithubUserSearchApp.UsersApi
+  alias GithubUserSearchApp.UsersAPI
 
   def mount(_params, _session, socket) do
-    {:ok, user} = UsersApi.fetch_user("octocat")
+    # {:ok, user} = UsersAPI.fetch_user("octocat")
+    user = dummy_user()
     form = to_form(%{"username" => ""})
     {:ok, assign(socket, user: user, form: form)}
   end
@@ -71,7 +72,7 @@ defmodule GithubUserSearchAppWeb.Search do
             <div class="flex gap-3 items-center">
               <.icon name="hero-building-office-2-solid" />
               <.link navigate={"https://github.com/#{@user.login}"}>
-                <%= "@#{@user.company}" %>
+                <%= "#{@user.company}" %>
               </.link>
             </div>
           </div>
@@ -84,10 +85,10 @@ defmodule GithubUserSearchAppWeb.Search do
   def search_form(assigns) do
     ~H"""
     <div class="bg-[#FEFEFE]">
-      <.form for={@form} phx-submit="search-user" class="flex items-center">
+      <.form for={@form} id="search-user" phx-submit="search-user" class="flex items-center">
         <.icon name="hero-magnifying-glass-solid" />
         <.input field={@form[:username]} autocomplete="off" placeholder="Search GitHub username…" />
-        <.button>
+        <.button phx-disable-with="Searching...">
           Search
         </.button>
       </.form>
@@ -96,7 +97,7 @@ defmodule GithubUserSearchAppWeb.Search do
   end
 
   def handle_event("search-user", %{"username" => username}, socket) do
-    case UsersApi.fetch_user(username) do
+    case UsersAPI.fetch_user(username) do
       {:ok, user} ->
         form = to_form(%{"username" => ""})
         {:noreply, assign(socket, user: user, form: form)}
@@ -105,5 +106,25 @@ defmodule GithubUserSearchAppWeb.Search do
         form = to_form(%{"username" => ""})
         {:noreply, assign(socket, form: form)}
     end
+  end
+
+  def dummy_user do
+    %{
+      avatar_url: "https://avatars.githubusercontent.com/u/30313228?v=4",
+      bio: "I'm enthusiastic about Erlang/Elixir and love building with OTP.
+        Currently, I'm learning Elixir, Phoenix, Alpine.js, TailwindCSS,
+        and LiveView.",
+      blog: "https://ayikoyo.com",
+      company: "@github",
+      created_at: "2017-07-20T08:37:32Z",
+      followers: 11497,
+      following: 9,
+      html_url: "https://github.com/lgmfred",
+      location: "::1, Ouganda",
+      login: "lgmfred",
+      name: "Ayiko Fred",
+      public_repos: 33,
+      twitter_username: "lgmfred"
+    }
   end
 end
