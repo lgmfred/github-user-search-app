@@ -100,10 +100,12 @@ defmodule GithubUserSearchAppWeb.Search do
     case UsersAPI.fetch_user(username) do
       {:ok, user} ->
         form = to_form(%{"username" => ""})
+        socket = put_flash(socket, :info, "User successfully fetched!")
         {:noreply, assign(socket, user: user, form: form)}
 
-      {:error, _error} ->
+      {:error, error} ->
         form = to_form(%{"username" => ""})
+        socket = put_flash(socket, :error, error)
         {:noreply, assign(socket, form: form)}
     end
   end

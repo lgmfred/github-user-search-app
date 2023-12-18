@@ -18,22 +18,23 @@ defmodule GithubUserSearchApp.ExternalUsersAPI do
 
     case Finch.request(build_req, GithubUserSearchApp.Finch) do
       {:ok, %Finch.Response{status: 200, body: body}} ->
-        IO.inspect(body, label: "Body")
         response = Jason.decode!(body, keys: :atoms)
-        Logger.info("[GitHub API] Success: #{inspect(response)}")
+        Logger.info("[GitHub API] OK 200: #{inspect(response)}")
         {:ok, response}
 
-      {:ok, %Finch.Response{status: 404, body: _body}} ->
-        Logger.warning("[GitHub API] Error 404: User Not found")
-        {:error, :user_not_found}
+      {:ok, %Finch.Response{status: 404, body: body}} ->
+        response = Jason.decode!(body, keys: :atoms)
+        Logger.warning("[GitHub API] Error 404: #{response.message}")
+        {:error, response.message}
 
-      {:ok, %Finch.Response{status: 403, body: _body}} ->
-        Logger.info("[GitHub API] Error: Rate limit exceeded")
-        {:error, :rate_limit_exceeded}
+      {:ok, %Finch.Response{status: 403, body: body}} ->
+        response = Jason.decode!(body, keys: :atoms)
+        Logger.info("[GitHub API] Error 403: #{response.message}")
+        {:error, response.message}
 
       {:error, exception} ->
         Logger.error("[GitHub API] Exception: #{inspect(exception)}")
-        {:error, :exception}
+        {:error, "An exception occurred!"}
     end
   end
 end
