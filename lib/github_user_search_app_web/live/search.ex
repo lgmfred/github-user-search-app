@@ -119,7 +119,7 @@ defmodule GithubUserSearchAppWeb.Search do
       blog: "https://ayikoyo.com",
       company: "@github",
       created_at: "2017-07-20T08:37:32Z",
-      followers: 11497,
+      followers: 11_497,
       following: 9,
       html_url: "https://github.com/lgmfred",
       location: "::1, Ouganda",
