@@ -15,6 +15,32 @@
 //     import "some-package"
 //
 
+// Add dark mode support 
+// REF: https://elixirforum.com/t/how-to-add-dark-mode-for-phoenix-1-7/54356/3?u=lgmfred
+function darkExpected() {
+    return localStorage.theme === 'dark' || (!('theme' in localStorage) &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches);
+  }
+  
+function initDarkMode() {
+    // On page load or when changing themes, best to add inline in `head` to avoid FOUC
+    if (darkExpected()) 
+        document.documentElement.classList.add('dark');  
+    else
+        document.documentElement.classList.remove('dark');
+    
+}
+  
+window.addEventListener("toogle-darkmode", e => {
+    if (darkExpected())
+        localStorage.theme = 'light';
+    else
+        localStorage.theme = 'dark';
+        initDarkMode();
+})
+
+initDarkMode();
+
 // Include phoenix_html to handle method=PUT/DELETE in forms and buttons.
 import "phoenix_html"
 // Establish Phoenix Socket and LiveView configuration.

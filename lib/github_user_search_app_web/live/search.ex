@@ -3,6 +3,7 @@ defmodule GithubUserSearchAppWeb.Search do
 
   use GithubUserSearchAppWeb, :live_view
   alias GithubUserSearchApp.UsersAPI
+  alias Phoenix.LiveView.JS
 
   def mount(_params, _session, socket) do
     # {:ok, user} = UsersAPI.fetch_user("octocat")
@@ -18,10 +19,16 @@ defmodule GithubUserSearchAppWeb.Search do
         <%!-- Header div --%>
         <div class="flex items-center justify-between">
           <h1 class="font-bold text-[#222731]">devfinder</h1>
-          <div class="flex text-[#4B6A9B]">
-            <h2>DARK</h2>
-            <.icon name={if false, do: "hero-sun-solid", else: "hero-moon-solid"} />
-          </div>
+          <button phx-click={toggle_dark_mode()}>
+            <div id="dark-mode" class="hidden gap-2 text-[#FFFFFF]">
+              <h2>LIGHT</h2>
+              <.icon name="hero-sun-solid" />
+            </div>
+            <div id="light-mode" class="flex gap-2 text-[#4B6A9B]">
+              <h2>DARK</h2>
+              <.icon name="hero-moon-solid" />
+            </div>
+          </button>
         </div>
 
         <.search_form form={@form} />
@@ -110,7 +117,13 @@ defmodule GithubUserSearchAppWeb.Search do
     end
   end
 
-  def dummy_user do
+  defp toggle_dark_mode do
+    JS.dispatch("toogle-darkmode")
+    |> JS.toggle(to: "#dark-mode", display: "flex")
+    |> JS.toggle(to: "#light-mode", display: "flex")
+  end
+
+  defp dummy_user do
     %{
       avatar_url: "https://avatars.githubusercontent.com/u/30313228?v=4",
       bio: "I'm enthusiastic about Erlang/Elixir and love building with OTP.
