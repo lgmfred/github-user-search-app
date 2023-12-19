@@ -18,7 +18,7 @@ defmodule GithubUserSearchAppWeb.Search do
       <div class="w-[327px] flex flex-col gap-4">
         <%!-- Header div --%>
         <div class="flex items-center justify-between">
-          <h1 class="font-bold text-[#222731]">devfinder</h1>
+          <h1 class="font-bold text-[#222731] dark:text-[#FFFFFF]">devfinder</h1>
           <button phx-click={toggle_dark_mode()}>
             <div id="dark-mode" class="hidden gap-2 text-[#FFFFFF]">
               <h2>LIGHT</h2>
@@ -33,33 +33,33 @@ defmodule GithubUserSearchAppWeb.Search do
 
         <.search_form form={@form} />
 
-        <div class="bg-[#FEFEFE] px-6 py-8 flex flex-col gap-4">
+        <div class="bg-[#FEFEFE] dark:bg-[#1E2A47] px-6 py-8 flex flex-col gap-4">
           <div class="flex gap-4">
             <img src={@user.avatar_url} class="w-[70px] h-[70px] rounded-full" />
             <div>
-              <h2><%= @user.name %></h2>
-              <p><%= "@#{@user.login}" %></p>
-              <p><%= @user.created_at %></p>
+              <h2 class="text-#2B3442 dark:text-[#FFFFFF]"><%= @user.name %></h2>
+              <p class="text-[#0079FF]"><%= "@#{@user.login}" %></p>
+              <p class="text-[#697C9A] dark:text-[#FFFFFF]"><%= @user.created_at %></p>
             </div>
           </div>
-          <p>
+          <p class="text-[#4B6A9B] dark:text-[#FFFFFF]">
             <%= @user.bio %>
           </p>
-          <div class="bg-[#F6F8FF] flex place-content-around">
+          <div class="bg-[#F6F8FF] dark:bg-[#141D2F] flex place-content-around">
             <div class="flex flex-col items-center justify-center">
-              <p>Repos</p>
-              <p><%= @user.public_repos %></p>
+              <p class="text-[#4B6A9B] dark:text-[#FFFFFF]">Repos</p>
+              <p class="text-[#2B3442] dark:text-[#FFFFFF]"><%= @user.public_repos %></p>
             </div>
             <div class="flex flex-col items-center justify-center">
-              <p>Followers</p>
-              <p><%= @user.followers %></p>
+              <p class="text-[#4B6A9B] dark:text-[#FFFFFF]">Followers</p>
+              <p class="text-[#2B3442] dark:text-[#FFFFFF]"><%= @user.followers %></p>
             </div>
             <div class="flex flex-col items-center justify-center">
-              <p>Following</p>
-              <p><%= @user.following %></p>
+              <p class="text-[#4B6A9B] dark:text-[#FFFFFF]">Following</p>
+              <p class="text-[#2B3442] dark:text-[#FFFFFF]"><%= @user.following %></p>
             </div>
           </div>
-          <div class="flex flex-col gap-2 items-start justify-around text-[#4B6A9B]">
+          <div class="flex flex-col gap-2 items-start justify-around text-[#4B6A9B] dark:text-[#FFFFFF]">
             <div class="flex gap-3">
               <.icon name="hero-map-pin-solid" />
               <p><%= @user.location %></p>
@@ -91,11 +91,16 @@ defmodule GithubUserSearchAppWeb.Search do
 
   def search_form(assigns) do
     ~H"""
-    <div class="bg-[#FEFEFE]">
+    <div class="bg-[#FEFEFE] dark:bg-[#1E2A47]">
       <.form for={@form} id="search-user" phx-submit="search-user" class="flex items-center">
-        <.icon name="hero-magnifying-glass-solid" />
-        <.input field={@form[:username]} autocomplete="off" placeholder="Search GitHub username…" />
-        <.button phx-disable-with="Searching...">
+        <.icon name="hero-magnifying-glass-solid" class="text-[#0079FF]" />
+        <.input
+          field={@form[:username]}
+          autocomplete="off"
+          placeholder="Search GitHub username…"
+          class="placeholder:text-[#4B6A9B] dark:placeholder:text-[#FFFFFF]"
+        />
+        <.button phx-disable-with="Searching..." class="text-[#FFFFFF] bg-[#0079FF]">
           Search
         </.button>
       </.form>
