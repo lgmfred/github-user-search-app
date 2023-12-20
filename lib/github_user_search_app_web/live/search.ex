@@ -41,7 +41,9 @@ defmodule GithubUserSearchAppWeb.Search do
                 <%= if @user.name, do: @user.name, else: @user.login %>
               </h2>
               <p class="text-[#0079FF]"><%= "@#{@user.login}" %></p>
-              <p class="text-[#697C9A] dark:text-[#FFFFFF]"><%= "Joined #{@user.created_at}" %></p>
+              <p class="text-[#697C9A] dark:text-[#FFFFFF]">
+                <%= "Joined #{format_date(@user.created_at)}" %>
+              </p>
             </div>
           </div>
           <p class="text-[#4B6A9B] dark:text-[#FFFFFF]">
@@ -154,6 +156,14 @@ defmodule GithubUserSearchAppWeb.Search do
     JS.dispatch("toogle-darkmode")
     |> JS.toggle(to: "#dark-mode", display: "flex")
     |> JS.toggle(to: "#light-mode", display: "flex")
+  end
+
+  defp format_date(date) do
+    {:ok, utc_time, _int} = DateTime.from_iso8601(date)
+
+    utc_time
+    |> DateTime.to_date()
+    |> Timex.format!("{D} {Mshort} {YYYY}")
   end
 
   defp dummy_user do

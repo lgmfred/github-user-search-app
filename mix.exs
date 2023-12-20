@@ -62,7 +62,8 @@ defmodule GithubUserSearchApp.MixProject do
       {:mox, "~> 1.1", only: :test},
       {:excoveralls, "~> 0.18.0", only: :test},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
-      {:credo, "~> 1.7", only: :dev, runtime: false}
+      {:credo, "~> 1.7", only: :dev, runtime: false},
+      {:timex, "~> 3.7"}
     ]
   end
 
