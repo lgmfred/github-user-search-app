@@ -37,13 +37,15 @@ defmodule GithubUserSearchAppWeb.Search do
           <div class="flex gap-4">
             <img src={@user.avatar_url} class="w-[70px] h-[70px] rounded-full" />
             <div>
-              <h2 class="text-#2B3442 dark:text-[#FFFFFF]"><%= @user.name %></h2>
+              <h2 class="text-#2B3442 dark:text-[#FFFFFF]">
+                <%= if @user.name, do: @user.name, else: @user.login %>
+              </h2>
               <p class="text-[#0079FF]"><%= "@#{@user.login}" %></p>
               <p class="text-[#697C9A] dark:text-[#FFFFFF]"><%= @user.created_at %></p>
             </div>
           </div>
           <p class="text-[#4B6A9B] dark:text-[#FFFFFF]">
-            <%= @user.bio %>
+            <%= if @user.bio, do: @user.bio, else: "This profile has no bio" %>
           </p>
           <div class="bg-[#F6F8FF] dark:bg-[#141D2F] flex place-content-around">
             <div class="flex flex-col items-center justify-center">
@@ -60,28 +62,22 @@ defmodule GithubUserSearchAppWeb.Search do
             </div>
           </div>
           <div class="flex flex-col gap-2 items-start justify-around text-[#4B6A9B] dark:text-[#FFFFFF]">
-            <div class="flex gap-3">
-              <.icon name="hero-map-pin-solid" />
-              <p><%= @user.location %></p>
-            </div>
-            <div class="flex gap-3 items-center">
-              <.icon name="hero-link-solid" />
-              <.link navigate={@user.blog}>
-                <%= @user.blog %>
-              </.link>
-            </div>
-            <div class="flex gap-3 items-center">
-              <.icon name="hero-x-mark" />
-              <.link navigate={"https://x.com/#{@user.twitter_username}"}>
-                <%= "@#{@user.twitter_username}" %>
-              </.link>
-            </div>
-            <div class="flex gap-3 items-center">
-              <.icon name="hero-building-office-2-solid" />
-              <.link navigate={"https://github.com/#{@user.login}"}>
-                <%= "#{@user.company}" %>
-              </.link>
-            </div>
+            <.profile_links
+              :for={
+                {icon, text, link} <- [
+                  {"hero-map-pin-solid", @user.location, nil},
+                  {"hero-link-solid", @user.blog, @user.blog},
+                  {"hero-x-mark", @user.twitter_username, "https://x.com/#{@user.twitter_username}"},
+                  {"hero-building-office-2-solid", @user.company,
+                   "https://github.com/#{@user.company}"}
+                ]
+              }
+              icon_name={icon}
+              text={text}
+              link={link}
+            >
+              <%= text %>
+            </.profile_links>
           </div>
         </div>
       </div>
@@ -104,6 +100,27 @@ defmodule GithubUserSearchAppWeb.Search do
           Search
         </.button>
       </.form>
+    </div>
+    """
+  end
+
+  attr :icon_name, :string, required: true
+  attr :text, :string, required: true
+  attr :link, :string, required: true
+  slot :inner_block, required: true
+
+  defp profile_links(assigns) do
+    ~H"""
+    <div class="flex gap-3 items-center">
+      <%= if @text do %>
+        <.icon name={@icon_name} />
+        <a href={@link}>
+          <%= render_slot(@inner_block) %>
+        </a>
+      <% else %>
+        <.icon name={@icon_name} />
+        <p>Not Available</p>
+      <% end %>
     </div>
     """
   end
@@ -135,7 +152,7 @@ defmodule GithubUserSearchAppWeb.Search do
         Currently, I'm learning Elixir, Phoenix, Alpine.js, TailwindCSS,
         and LiveView.",
       blog: "https://ayikoyo.com",
-      company: "@github",
+      company: nil,
       created_at: "2017-07-20T08:37:32Z",
       followers: 11_497,
       following: 9,
