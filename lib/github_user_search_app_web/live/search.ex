@@ -41,25 +41,24 @@ defmodule GithubUserSearchAppWeb.Search do
                 <%= if @user.name, do: @user.name, else: @user.login %>
               </h2>
               <p class="text-[#0079FF]"><%= "@#{@user.login}" %></p>
-              <p class="text-[#697C9A] dark:text-[#FFFFFF]"><%= @user.created_at %></p>
+              <p class="text-[#697C9A] dark:text-[#FFFFFF]"><%= "Joined #{@user.created_at}" %></p>
             </div>
           </div>
           <p class="text-[#4B6A9B] dark:text-[#FFFFFF]">
             <%= if @user.bio, do: @user.bio, else: "This profile has no bio" %>
           </p>
           <div class="bg-[#F6F8FF] dark:bg-[#141D2F] flex place-content-around">
-            <div class="flex flex-col items-center justify-center">
-              <p class="text-[#4B6A9B] dark:text-[#FFFFFF]">Repos</p>
-              <p class="text-[#2B3442] dark:text-[#FFFFFF]"><%= @user.public_repos %></p>
-            </div>
-            <div class="flex flex-col items-center justify-center">
-              <p class="text-[#4B6A9B] dark:text-[#FFFFFF]">Followers</p>
-              <p class="text-[#2B3442] dark:text-[#FFFFFF]"><%= @user.followers %></p>
-            </div>
-            <div class="flex flex-col items-center justify-center">
-              <p class="text-[#4B6A9B] dark:text-[#FFFFFF]">Following</p>
-              <p class="text-[#2B3442] dark:text-[#FFFFFF]"><%= @user.following %></p>
-            </div>
+            <.stats
+              :for={
+                {stat, figure} <- [
+                  {"Repo", @user.public_repos},
+                  {"Followers", @user.followers},
+                  {"Following", @user.following}
+                ]
+              }
+              stat={stat}
+              figure={figure}
+            />
           </div>
           <div class="flex flex-col gap-2 items-start justify-around text-[#4B6A9B] dark:text-[#FFFFFF]">
             <.profile_links
@@ -100,6 +99,18 @@ defmodule GithubUserSearchAppWeb.Search do
           Search
         </.button>
       </.form>
+    </div>
+    """
+  end
+
+  attr :stat, :string, required: true
+  attr :figure, :integer, required: true
+
+  defp stats(assigns) do
+    ~H"""
+    <div class="flex flex-col items-center justify-center text-[#4B6A9B] dark:text-[#FFFFFF]">
+      <p class="text-[#4B6A9B] dark:text-[#FFFFFF]"><%= @stat %></p>
+      <p class="text-[#2B3442] dark:text-[#FFFFFF]"><%= @figure %></p>
     </div>
     """
   end
