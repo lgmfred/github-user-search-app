@@ -49,7 +49,7 @@ defmodule GithubUserSearchAppWeb.Search do
           <p class="text-[#4B6A9B] dark:text-[#FFFFFF]">
             <%= if @user.bio, do: @user.bio, else: "This profile has no bio" %>
           </p>
-          <div class="bg-[#F6F8FF] dark:bg-[#141D2F] flex place-content-around">
+          <div class="bg-[#F6F8FF] dark:bg-[#141D2F] flex place-content-between gap-2 rounded-lg p-[18px]">
             <.stats
               :for={
                 {stat, figure} <- [
@@ -110,9 +110,9 @@ defmodule GithubUserSearchAppWeb.Search do
 
   defp stats(assigns) do
     ~H"""
-    <div class="flex flex-col items-center justify-center text-[#4B6A9B] dark:text-[#FFFFFF]">
-      <p class="text-[#4B6A9B] dark:text-[#FFFFFF]"><%= @stat %></p>
-      <p class="text-[#2B3442] dark:text-[#FFFFFF]"><%= @figure %></p>
+    <div class="flex flex-col flex-1 items-center text-[#4B6A9B] dark:text-[#FFFFFF]">
+      <p class="text-xs text-[#4B6A9B] dark:text-[#FFFFFF]"><%= @stat %></p>
+      <p class="text-base font-bold text-[#2B3442] dark:text-[#FFFFFF]"><%= @figure %></p>
     </div>
     """
   end
