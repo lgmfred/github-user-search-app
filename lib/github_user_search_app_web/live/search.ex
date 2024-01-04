@@ -14,13 +14,13 @@ defmodule GithubUserSearchAppWeb.Search do
 
   def render(assigns) do
     ~H"""
-    <div class="flex place-content-center">
+    <div class="flex place-content-center font-normal text-sm">
       <div class="w-[327px] flex flex-col gap-4">
         <%!-- Header div --%>
         <div class="flex items-center justify-between">
-          <h1 class="font-bold text-[#222731] dark:text-[#FFFFFF]">devfinder</h1>
+          <h1 class="font-bold text-2xl text-[#222731] dark:text-[#FFFFFF]">devfinder</h1>
           <button phx-click={toggle_dark_mode()}>
-            <div id="dark-mode" class="hidden gap-2 text-[#FFFFFF]">
+            <div id="dark-mode" class="hidden gap-2 text-sm text-[#FFFFFF]">
               <h2>LIGHT</h2>
               <.icon name="hero-sun-solid" />
             </div>
@@ -33,11 +33,11 @@ defmodule GithubUserSearchAppWeb.Search do
 
         <.search_form form={@form} />
 
-        <div class="bg-[#FEFEFE] dark:bg-[#1E2A47] px-6 py-8 flex flex-col gap-4">
+        <div class="rounded-lg bg-[#FEFEFE] dark:bg-[#1E2A47] px-6 py-8 flex flex-col gap-4">
           <div class="flex gap-4">
             <img src={@user.avatar_url} class="w-[70px] h-[70px] rounded-full" />
             <div>
-              <h2 class="text-#2B3442 dark:text-[#FFFFFF]">
+              <h2 class="text-base font-bold text-#2B3442 dark:text-[#FFFFFF]">
                 <%= if @user.name, do: @user.name, else: @user.login %>
               </h2>
               <p class="text-[#0079FF]"><%= "@#{@user.login}" %></p>
@@ -46,7 +46,7 @@ defmodule GithubUserSearchAppWeb.Search do
               </p>
             </div>
           </div>
-          <p class="text-[#4B6A9B] dark:text-[#FFFFFF]">
+          <p class="font-normal text-sm text-[#4B6A9B] dark:text-[#FFFFFF]">
             <%= if @user.bio, do: @user.bio, else: "This profile has no bio" %>
           </p>
           <div class="bg-[#F6F8FF] dark:bg-[#141D2F] flex place-content-between gap-2 rounded-lg p-[18px]">
@@ -62,7 +62,7 @@ defmodule GithubUserSearchAppWeb.Search do
               figure={figure}
             />
           </div>
-          <div class="flex flex-col gap-2 items-start justify-around text-[#4B6A9B] dark:text-[#FFFFFF]">
+          <div class="font-normal text-sm flex flex-col gap-2 items-start justify-around text-[#4B6A9B] dark:text-[#FFFFFF]">
             <.profile_links
               :for={
                 {icon, text, link} <- [
@@ -131,8 +131,8 @@ defmodule GithubUserSearchAppWeb.Search do
           <%= render_slot(@inner_block) %>
         </a>
       <% else %>
-        <.icon name={@icon_name} />
-        <p>Not Available</p>
+        <.icon name={@icon_name} class="opacity-50" />
+        <p class="opacity-50">Not Available</p>
       <% end %>
     </div>
     """
