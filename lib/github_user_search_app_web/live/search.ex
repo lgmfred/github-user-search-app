@@ -2,20 +2,22 @@ defmodule GithubUserSearchAppWeb.Search do
   @moduledoc false
 
   use GithubUserSearchAppWeb, :live_view
+
   alias GithubUserSearchApp.UsersAPI
+  alias GithubUserSearchAppWeb.CustomComponents
   alias Phoenix.LiveView.JS
 
   def mount(_params, _session, socket) do
     # {:ok, user} = UsersAPI.fetch_user("octocat")
     user = dummy_user()
     form = to_form(%{"username" => ""})
-    {:ok, assign(socket, user: user, form: form)}
+    {:ok, assign(socket, user: user, form: form, error: nil)}
   end
 
   def render(assigns) do
     ~H"""
-    <div class="flex place-content-center font-normal text-sm">
-      <div class="w-[327px] flex flex-col gap-4">
+    <div class="flex place-content-center font-normal text-sm md:text-base leading-6 md:leading-9">
+      <div class="w-[327px] md:w-[648px] flex flex-col gap-4">
         <%!-- Header div --%>
         <div class="flex items-center justify-between">
           <h1 class="font-bold text-2xl text-[#222731] dark:text-[#FFFFFF]">devfinder</h1>
@@ -24,20 +26,23 @@ defmodule GithubUserSearchAppWeb.Search do
               <h2>LIGHT</h2>
               <.icon name="hero-sun-solid" />
             </div>
-            <div id="light-mode" class="flex gap-2 text-[#4B6A9B]">
+            <div id="light-mode" class="flex gap-2 text-sm text-[#4B6A9B]">
               <h2>DARK</h2>
               <.icon name="hero-moon-solid" />
             </div>
           </button>
         </div>
 
-        <.search_form form={@form} />
+        <.search_form form={@form} error={@error} />
 
-        <div class="rounded-lg bg-[#FEFEFE] dark:bg-[#1E2A47] px-6 py-8 flex flex-col gap-4">
-          <div class="flex gap-4">
-            <img src={@user.avatar_url} class="w-[70px] h-[70px] rounded-full" />
+        <div class="rounded-lg bg-[#FEFEFE] dark:bg-[#1E2A47] px-6 md:px-10 py-8 flex flex-col gap-4">
+          <div class="flex items-center gap-4 md:gap-8">
+            <img
+              src={@user.avatar_url}
+              class="w-[70px] md:w-[117px] h-[70px] md:h-[117px]  rounded-full"
+            />
             <div>
-              <h2 class="text-base font-bold text-#2B3442 dark:text-[#FFFFFF]">
+              <h2 class="text-base md:text-2xl font-bold text-#2B3442 dark:text-[#FFFFFF]">
                 <%= if @user.name, do: @user.name, else: @user.login %>
               </h2>
               <p class="text-[#0079FF]"><%= "@#{@user.login}" %></p>
@@ -49,7 +54,7 @@ defmodule GithubUserSearchAppWeb.Search do
           <p class="font-normal text-sm text-[#4B6A9B] dark:text-[#FFFFFF]">
             <%= if @user.bio, do: @user.bio, else: "This profile has no bio" %>
           </p>
-          <div class="bg-[#F6F8FF] dark:bg-[#141D2F] flex place-content-between gap-2 rounded-lg p-[18px]">
+          <div class="bg-[#F6F8FF] dark:bg-[#141D2F] flex md:flex-grow place-content-between md:place-content-start gap-2 rounded-lg p-[18px]">
             <.stats
               :for={
                 {stat, figure} <- [
@@ -88,20 +93,31 @@ defmodule GithubUserSearchAppWeb.Search do
 
   def search_form(assigns) do
     ~H"""
-    <div class="bg-[#FEFEFE] dark:bg-[#1E2A47]">
-      <.form for={@form} id="search-user" phx-submit="search-user" class="flex items-center">
-        <.icon name="hero-magnifying-glass-solid" class="text-[#0079FF]" />
-        <.input
-          field={@form[:username]}
-          autocomplete="off"
-          placeholder="Search GitHub username…"
-          class="placeholder:text-[#4B6A9B] dark:placeholder:text-[#FFFFFF]"
-        />
-        <.button phx-disable-with="Searching..." class="text-[#FFFFFF] bg-[#0079FF]">
+    <%!-- <div class="bg-[#FEFEFE] dark:bg-[#1E2A47]"> --%>
+    <.form
+      for={@form}
+      id="search-user"
+      phx-submit="search-user"
+      class="form-grid grid grid-flow-col items-center p-2 bg-[#FEFEFE] dark:bg-[#1E2A47] w-full rounded-xl "
+    >
+      <.icon name="hero-magnifying-glass-solid" class=" search-icon mx-auto text-[#0079FF]" />
+      <CustomComponents.input
+        field={@form[:username]}
+        name="username"
+        id="username"
+        type="text"
+        autocomplete="off"
+        placeholder="Search GitHub username..."
+        custom_class="search-input text-sm border-none focus:ring-0 w-full h-full dark:bg-[#1E2A47] dark:text-white"
+      />
+      <div class="search-button relative w-full">
+        <p class="absolute right-[100%] bottom-[5%] text-[#F74646]"><%= @error %></p>
+        <.button phx-disable-with="......" class="text-[#FFFFFF] bg-[#0079FF]">
           Search
         </.button>
-      </.form>
-    </div>
+      </div>
+    </.form>
+    <%!-- </div> --%>
     """
   end
 
@@ -138,6 +154,10 @@ defmodule GithubUserSearchAppWeb.Search do
     """
   end
 
+  def handle_event("search-user", %{"username" => ""}, socket) do
+    {:noreply, assign(socket, error: "No results")}
+  end
+
   def handle_event("search-user", %{"username" => username}, socket) do
     case UsersAPI.fetch_user(username) do
       {:ok, user} ->
@@ -148,7 +168,7 @@ defmodule GithubUserSearchAppWeb.Search do
       {:error, error} ->
         form = to_form(%{"username" => ""})
         socket = put_flash(socket, :error, error)
-        {:noreply, assign(socket, form: form)}
+        {:noreply, assign(socket, form: form, error: "No results")}
     end
   end
 
