@@ -35,26 +35,31 @@ defmodule GithubUserSearchAppWeb.Search do
 
         <.search_form form={@form} error={@error} />
 
-        <div class="rounded-lg bg-[#FEFEFE] dark:bg-[#1E2A47] px-6 md:px-10 py-8 flex flex-col gap-4">
-          <div class="flex items-center gap-4 md:gap-8">
-            <img
-              src={@user.avatar_url}
-              class="w-[70px] md:w-[117px] h-[70px] md:h-[117px]  rounded-full"
-            />
-            <div>
-              <h2 class="text-base md:text-2xl font-bold text-#2B3442 dark:text-[#FFFFFF]">
-                <%= if @user.name, do: @user.name, else: @user.login %>
-              </h2>
-              <p class="text-[#0079FF]"><%= "@#{@user.login}" %></p>
-              <p class="text-[#697C9A] dark:text-[#FFFFFF]">
-                <%= "Joined #{format_date(@user.created_at)}" %>
-              </p>
-            </div>
+        <div
+          id="user-profile"
+          class="rounded-lg bg-[#FEFEFE] dark:bg-[#1E2A47] px-6 md:px-10 py-8 flex flex-col gap-6"
+        >
+          <img
+            id="user-avatar"
+            src={@user.avatar_url}
+            class="w-[70px] md:w-[117px] h-[70px] md:h-[117px]  rounded-full"
+          />
+          <div id="user-identity">
+            <h2
+              id="user-name"
+              class="text-base md:text-2xl font-bold text-#2B3442 dark:text-[#FFFFFF]"
+            >
+              <%= if @user.name, do: @user.name, else: @user.login %>
+            </h2>
+            <p id="user-login" class="text-[#0079FF]"><%= "@#{@user.login}" %></p>
+            <p id="user-created-at" class="text-[#697C9A] dark:text-[#FFFFFF]">
+              <%= "Joined #{format_date(@user.created_at)}" %>
+            </p>
           </div>
-          <p class="font-normal text-sm text-[#4B6A9B] dark:text-[#FFFFFF]">
+          <p id="user-bio" class="font-normal text-sm text-[#4B6A9B] dark:text-[#FFFFFF]">
             <%= if @user.bio, do: @user.bio, else: "This profile has no bio" %>
           </p>
-          <div class="bg-[#F6F8FF] dark:bg-[#141D2F] flex md:flex-grow place-content-between md:place-content-start gap-2 rounded-lg p-[18px]">
+          <div id="user-stats" class="bg-[#F6F8FF] dark:bg-[#141D2F] flex rounded-lg p-[18px]">
             <.stats
               :for={
                 {stat, figure} <- [
@@ -67,7 +72,10 @@ defmodule GithubUserSearchAppWeb.Search do
               figure={figure}
             />
           </div>
-          <div class="font-normal text-sm flex flex-col gap-2 items-start justify-around text-[#4B6A9B] dark:text-[#FFFFFF]">
+          <div
+            id="user-links"
+            class="font-normal text-sm grid gap-3  md:grid-cols-2 justify-item-start text-[#4B6A9B] dark:text-[#FFFFFF]"
+          >
             <.profile_links
               :for={
                 {icon, text, link} <- [
@@ -93,7 +101,6 @@ defmodule GithubUserSearchAppWeb.Search do
 
   def search_form(assigns) do
     ~H"""
-    <%!-- <div class="bg-[#FEFEFE] dark:bg-[#1E2A47]"> --%>
     <.form
       for={@form}
       id="search-user"
@@ -117,7 +124,6 @@ defmodule GithubUserSearchAppWeb.Search do
         </.button>
       </div>
     </.form>
-    <%!-- </div> --%>
     """
   end
 
@@ -126,7 +132,7 @@ defmodule GithubUserSearchAppWeb.Search do
 
   defp stats(assigns) do
     ~H"""
-    <div class="flex flex-col flex-1 items-center text-[#4B6A9B] dark:text-[#FFFFFF]">
+    <div class="flex flex-col flex-1 items-center md:items-start text-[#4B6A9B] dark:text-[#FFFFFF]">
       <p class="text-xs text-[#4B6A9B] dark:text-[#FFFFFF]"><%= @stat %></p>
       <p class="text-base font-bold text-[#2B3442] dark:text-[#FFFFFF]"><%= @figure %></p>
     </div>

@@ -7,22 +7,84 @@
 
 /* This file is for your main application CSS */
 @layer base {
-    html {
+  html {
       font-family: 'Space Mono', monospace;
+ }
+     .form-grid {
+      grid-template-columns: 2em 1fr 5em;
+    }
+    
+    .search-icon {
+      grid-column: 1/2;
+    }
+    .search-input {
+      grid-column: 1/3;
+    }
+    
+    .search-button {
+      grid-column: 3/4;
+  }
+
+  #user-avatar {
+    grid-area: user-avatar;
+  }
+
+  #user-identity {
+    grid-area: user-identity;
+  }
+
+  #user-bio{
+    grid-area: user-bio;
+  }
+
+  #user-stats {
+    grid-area: user-stats;
+  }
+
+  #user-links {
+    grid-area: user-links;
+  }
+
+  @media (width < 1024px) {
+    #user-profile {
+      display: grid;
+      grid-template-areas:
+        "user-avatar user-identity"
+        "user-bio user-bio"
+        "user-stats user-stats"
+        "user-links user-links";
     }
   }
 
-.form-grid {
-  grid-template-columns: 2em 1fr 5em;
-}
+  @media (min-width: 1024px) {
+    #user-profile {
+      display: grid;
+      grid-template-areas:
+        "user-avatar user-identity"
+        "user-avatar user-bio"
+        "user-avatar user-stats"
+        "user-avatar user-links";
+    }
 
-.search-icon {
-  grid-column: 1/2;
-}
-.search-input {
-  grid-column: 1/3;
-}
+    #user-identity{
+      display: grid;
+      grid-template-areas:
+        "user-name user-created-at"
+        "user-login .";
+    }
 
-.search-button {
-  grid-column: 3/4;
+    #user-name{
+      grid-area: user-name;
+    }
+
+    #user-created-at{
+      grid-area: user-created-at;
+      justify-self: end;
+      justify-self: end;
+    }
+
+    #user-created-at{
+      grid-area: user-created-at;
+    }
+  }
 }
