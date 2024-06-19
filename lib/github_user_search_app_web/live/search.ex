@@ -36,21 +36,22 @@ defmodule GithubUserSearchAppWeb.Search do
 
         <div
           id="user-profile"
-          class="rounded-lg bg-[#FEFEFE] dark:bg-[#1E2A47] px-6 md:px-10 py-8 flex flex-col gap-6"
+          class="gap-4 rounded-lg bg-[#FEFEFE] dark:bg-[#1E2A47] px-6 md:px-10 py-8"
         >
-          <img
-            id="user-avatar"
-            src={@user.avatar_url}
-            class="w-[70px] md:w-[117px] h-[70px] md:h-[117px]  rounded-full"
-          />
-          <div id="user-identity">
-            <h2
-              id="user-name"
-              class="text-base md:text-2xl font-bold text-#2B3442 dark:text-[#FFFFFF]"
-            >
-              <%= if @user.name, do: @user.name, else: @user.login %>
-            </h2>
-            <p id="user-login" class="text-[#0079FF]"><%= "@#{@user.login}" %></p>
+          <img id="user-avatar" src={@user.avatar_url} class="w-16 md:w-20 h-16 md:h-20 rounded-full" />
+          <div
+            id="user-identity"
+            class="flex flex-col md:-ml-32 lg:ml-0 lg:flex-row lg:justify-between"
+          >
+            <div class="flex flex-col">
+              <h2
+                id="user-name"
+                class="text-base md:text-2xl font-bold text-#2B3442 dark:text-[#FFFFFF]"
+              >
+                <%= if @user.name, do: @user.name, else: @user.login %>
+              </h2>
+              <p id="user-login" class="text-[#0079FF]"><%= "@#{@user.login}" %></p>
+            </div>
             <p id="user-created-at" class="text-[#697C9A] dark:text-[#FFFFFF]">
               <%= "Joined #{format_date(@user.created_at)}" %>
             </p>
@@ -154,7 +155,7 @@ defmodule GithubUserSearchAppWeb.Search do
     <div class="flex gap-3 items-center">
       <%= if @text do %>
         <.icon name={@icon_name} />
-        <a href={@link}>
+        <a href={@link} class="hover:underline">
           <%= render_slot(@inner_block) %>
         </a>
       <% else %>
