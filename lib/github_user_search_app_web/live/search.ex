@@ -4,14 +4,13 @@ defmodule GithubUserSearchAppWeb.Search do
   use GithubUserSearchAppWeb, :live_view
 
   alias GithubUserSearchApp.UsersAPI
-  alias GithubUserSearchAppWeb.CustomComponents
   alias Phoenix.LiveView.JS
 
   def mount(_params, _session, socket) do
     # {:ok, user} = UsersAPI.fetch_user("octocat")
     user = dummy_user()
     form = to_form(%{"username" => ""})
-    {:ok, assign(socket, user: user, form: form, error: nil)}
+    {:ok, assign(socket, user: user, form: form, error: false)}
   end
 
   def render(assigns) do
@@ -101,27 +100,33 @@ defmodule GithubUserSearchAppWeb.Search do
 
   def search_form(assigns) do
     ~H"""
-    <.form
-      for={@form}
-      id="search-user"
-      phx-submit="search-user"
-      class="form-grid grid grid-flow-col items-center p-2 bg-[#FEFEFE] dark:bg-[#1E2A47] w-full rounded-xl "
-    >
-      <.icon name="hero-magnifying-glass-solid" class=" search-icon mx-auto text-[#0079FF]" />
-      <CustomComponents.input
-        field={@form[:username]}
-        name="username"
-        id="username"
-        type="text"
-        autocomplete="off"
-        placeholder="Search GitHub username..."
-        custom_class="search-input text-sm border-none focus:ring-0 w-full h-full dark:bg-[#1E2A47] dark:text-white"
-      />
-      <div class="search-button relative w-full">
-        <p class="absolute right-[100%] bottom-[5%] text-[#F74646]"><%= @error %></p>
-        <.button phx-disable-with="......" class="text-[#FFFFFF] bg-[#0079FF]">
-          Search
-        </.button>
+    <.form for={@form} id="search-user" phx-submit="search-user">
+      <label for="username" class="sr-only block text-sm font-medium leading-6 text-gray-900">
+        Price
+      </label>
+      <div class="relative mt-2 rounded-full shadow-sm">
+        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+          <span class="text-[#0079FF] sm:text-sm">
+            <.icon name="hero-magnifying-glass" />
+          </span>
+        </div>
+        <input
+          type="text"
+          name="username"
+          id="username"
+          class="block w-full h-14 rounded-md border-0 py-1.5 pl-12 pr-12 text-gray-900 dark:text-white dark:bg-[#1E2A47] ring-0 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-gray-300 sm:text-sm sm:leading-6"
+          placeholder="Search GitHub username..."
+          aria-describedby="github-username"
+        />
+
+        <div class="absolute flex inset-y-0 right-0 flex py-1.5 pr-1.5">
+          <span :if={@error} class="flex items-center font-bold mr-4 text-[#F74646]">
+            No results
+          </span>
+          <button class="inline-flex items-center bg-[#0079FF] rounded-lg px-4 font-bold text-white">
+            Search
+          </button>
+        </div>
       </div>
     </.form>
     """

@@ -10,7 +10,7 @@ defmodule GithubUserSearchAppWeb.SearchTest do
   test "rendering default page in connected state", %{conn: conn} do
     {:ok, view, html} = live(conn, ~p"/")
 
-    assert has_element?(view, ~s(input[placeholder*="Search GitHub username…"]))
+    assert has_element?(view, ~s(input[placeholder*="Search GitHub username..."]))
     assert has_element?(view, "button", "Search")
     assert has_element?(view, ~s(a[href*="https://ayikoyo.com"]))
 
