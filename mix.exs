@@ -80,6 +80,7 @@ defmodule GithubUserSearchApp.MixProject do
       "assets.build": ["tailwind default", "esbuild default"],
       "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"],
       lint: [
+        "cmd --cd assets npx prettier -w ..",
         "format --check-formatted",
         "compile --warnings-as-errors --force",
         "credo --strict"

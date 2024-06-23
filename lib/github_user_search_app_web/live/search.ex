@@ -1,22 +1,27 @@
 defmodule GithubUserSearchAppWeb.Search do
   @moduledoc false
 
+  alias GithubUserSearchApp.Client
   use GithubUserSearchAppWeb, :live_view
 
-  alias GithubUserSearchApp.UsersAPI
+  alias GithubUserSearchApp.Client.Client
   alias Phoenix.LiveView.JS
 
   def mount(_params, _session, socket) do
-    # {:ok, user} = UsersAPI.fetch_user("octocat")
-    user = dummy_user()
+    {:ok, user} = fetch_initial_render_user()
     form = to_form(%{"username" => ""})
-    {:ok, assign(socket, user: user, form: form, error: false)}
+
+    {:ok,
+     socket
+     |> assign(:error, false)
+     |> assign(:form, form)
+     |> assign(:user, user)}
   end
 
   def render(assigns) do
     ~H"""
     <div class="flex place-content-center font-normal text-sm md:text-base leading-6 md:leading-9">
-      <div class="w-[327px] md:w-[648px] flex flex-col gap-4">
+      <div class="flex flex-col gap-4 max-w-xs md:max-w-2xl lg:max-w-3xl">
         <%!-- Header div --%>
         <div class="flex items-center justify-between">
           <h1 class="font-bold text-2xl text-[#222731] dark:text-[#FFFFFF]">devfinder</h1>
@@ -38,34 +43,38 @@ defmodule GithubUserSearchAppWeb.Search do
           id="user-profile"
           class="gap-4 rounded-lg bg-[#FEFEFE] dark:bg-[#1E2A47] px-6 md:px-10 py-8"
         >
-          <img id="user-avatar" src={@user.avatar_url} class="w-16 md:w-20 h-16 md:h-20 rounded-full" />
+          <img
+            id="user-avatar"
+            src={@user["avatar_url"]}
+            class="w-16 md:w-20 h-16 md:h-20 rounded-full"
+          />
           <div
             id="user-identity"
-            class="flex flex-col md:-ml-32 lg:ml-0 lg:flex-row lg:justify-between"
+            class="flex flex-col md:-ml-16 lg:ml-0 lg:flex-row lg:justify-between"
           >
             <div class="flex flex-col">
               <h2
                 id="user-name"
                 class="text-base md:text-2xl font-bold text-#2B3442 dark:text-[#FFFFFF]"
               >
-                <%= if @user.name, do: @user.name, else: @user.login %>
+                <%= if @user["name"], do: @user["name"], else: @user["login"] %>
               </h2>
-              <p id="user-login" class="text-[#0079FF]"><%= "@#{@user.login}" %></p>
+              <p id="user-login" class="text-[#0079FF]"><%= "@#{@user["login"]}" %></p>
             </div>
             <p id="user-created-at" class="text-[#697C9A] dark:text-[#FFFFFF]">
-              <%= "Joined #{format_date(@user.created_at)}" %>
+              <%= "Joined #{format_date(@user["created_at"])}" %>
             </p>
           </div>
           <p id="user-bio" class="font-normal text-sm text-[#4B6A9B] dark:text-[#FFFFFF]">
-            <%= if @user.bio, do: @user.bio, else: "This profile has no bio" %>
+            <%= if @user["bio"], do: @user["bio"], else: "This profile has no bio" %>
           </p>
-          <div id="user-stats" class="bg-[#F6F8FF] dark:bg-[#141D2F] flex rounded-lg p-[18px]">
+          <div id="user-stats" class="bg-[#F6F8FF] dark:bg-[#141D2F] flex rounded-lg p-4">
             <.stats
               :for={
                 {stat, figure} <- [
-                  {"Repo", @user.public_repos},
-                  {"Followers", @user.followers},
-                  {"Following", @user.following}
+                  {"Repo", @user["public_repos"]},
+                  {"Followers", @user["followers"]},
+                  {"Following", @user["following"]}
                 ]
               }
               stat={stat}
@@ -79,11 +88,12 @@ defmodule GithubUserSearchAppWeb.Search do
             <.profile_links
               :for={
                 {icon, text, link} <- [
-                  {"hero-map-pin-solid", @user.location, nil},
-                  {"hero-link-solid", @user.blog, @user.blog},
-                  {"hero-x-mark", @user.twitter_username, "https://x.com/#{@user.twitter_username}"},
-                  {"hero-building-office-2-solid", @user.company,
-                   "https://github.com/#{@user.company}"}
+                  {"hero-map-pin-solid", @user["location"], nil},
+                  {"hero-link-solid", @user["blog"], @user["blog"]},
+                  {"hero-x-mark", @user["twitter_username"],
+                   "https://x.com/#{@user["twitter_username"]}"},
+                  {"hero-building-office-2-solid", @user["company"],
+                   "https://github.com/#{@user["company"]}"}
                 ]
               }
               icon_name={icon}
@@ -107,7 +117,7 @@ defmodule GithubUserSearchAppWeb.Search do
       </label>
       <div class="relative mt-2 rounded-full shadow-sm">
         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-          <span class="text-[#0079FF] sm:text-sm">
+          <span class="text-[#0079FF]">
             <.icon name="hero-magnifying-glass" />
           </span>
         </div>
@@ -115,7 +125,7 @@ defmodule GithubUserSearchAppWeb.Search do
           type="text"
           name="username"
           id="username"
-          class="block w-full h-14 rounded-md border-0 py-1.5 pl-12 pr-12 text-gray-900 dark:text-white dark:bg-[#1E2A47] ring-0 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-gray-300 sm:text-sm sm:leading-6"
+          class="block w-full h-14 rounded-md border-0 py-1.5 pl-12 pr-12 text-gray-900 dark:text-white dark:bg-[#1E2A47] ring-0 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-gray-300 text-xs md:text-sm lg:text-base sm:leading-6"
           placeholder="Search GitHub username..."
           aria-describedby="github-username"
         />
@@ -167,20 +177,29 @@ defmodule GithubUserSearchAppWeb.Search do
   end
 
   def handle_event("search-user", %{"username" => ""}, socket) do
-    {:noreply, assign(socket, error: "No results")}
+    {:noreply, assign(socket, :error, "No results")}
   end
 
   def handle_event("search-user", %{"username" => username}, socket) do
-    case UsersAPI.fetch_user(username) do
+    case Client.fetch_user(username) do
       {:ok, user} ->
         form = to_form(%{"username" => ""})
-        socket = put_flash(socket, :info, "User successfully fetched!")
-        {:noreply, assign(socket, user: user, form: form)}
+
+        {:noreply,
+         socket
+         |> assign(:error, nil)
+         |> assign(:form, form)
+         |> assign(:user, user)
+         |> put_flash(:info, "User successfully fetched!")}
 
       {:error, error} ->
         form = to_form(%{"username" => ""})
-        socket = put_flash(socket, :error, error)
-        {:noreply, assign(socket, form: form, error: "No results")}
+
+        {:noreply,
+         socket
+         |> assign(:error, "No results")
+         |> assign(:form, form)
+         |> put_flash(:error, error)}
     end
   end
 
@@ -198,23 +217,28 @@ defmodule GithubUserSearchAppWeb.Search do
     |> Timex.format!("{D} {Mshort} {YYYY}")
   end
 
+  defp fetch_initial_render_user do
+    case Mix.env() do
+      :test -> {:ok, dummy_user()}
+      _any -> Client.fetch_user("octocat")
+    end
+  end
+
   defp dummy_user do
     %{
-      avatar_url: "https://avatars.githubusercontent.com/u/30313228?v=4",
-      bio: "I'm enthusiastic about Erlang/Elixir and love building with OTP.
-        Currently, I'm learning Elixir, Phoenix, Alpine.js, TailwindCSS,
-        and LiveView.",
-      blog: "https://ayikoyo.com",
-      company: nil,
-      created_at: "2017-07-20T08:37:32Z",
-      followers: 11_497,
-      following: 9,
-      html_url: "https://github.com/lgmfred",
-      location: "::1, Ouganda",
-      login: "lgmfred",
-      name: "Ayiko Fred",
-      public_repos: 33,
-      twitter_username: "lgmfred"
+      "avatar_url" => "https://avatars.githubusercontent.com/u/583231?v=4",
+      "bio" => nil,
+      "blog" => "https://github.blog",
+      "company" => "@github",
+      "created_at" => "2011-01-25T18:44:36Z",
+      "followers" => 13_935,
+      "following" => 9,
+      "html_url" => "https://github.com/octocat",
+      "location" => "San Francisco",
+      "login" => "octocat",
+      "name" => "The Octocat",
+      "public_repos" => 8,
+      "twitter_username" => nil
     }
   end
 end

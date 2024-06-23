@@ -13,7 +13,7 @@ defmodule GithubUserSearchApp.Application do
        query: Application.get_env(:github_user_search_app, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: GithubUserSearchApp.PubSub},
       # Start the Finch HTTP client for sending emails
-      {Finch, name: GithubUserSearchApp.Finch},
+      {Finch, name: GithubUserSearchApp.Client.Http},
       # Start a worker by calling: GithubUserSearchApp.Worker.start_link(arg)
       # {GithubUserSearchApp.Worker, arg},
       # Start to serve requests, typically the last entry
