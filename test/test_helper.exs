@@ -1,9 +1,9 @@
-Mox.defmock(GithubUserSearchApp.MockUsersAPI, for: GithubUserSearchApp.UsersAPI)
+Mox.defmock(GithubUserSearchApp.Client.Mock, for: GithubUserSearchApp.Client.Client)
 
 Application.put_env(
   :github_user_search_app,
-  :users_api_client_module,
-  GithubUserSearchApp.MockUsersAPI
+  :api_client,
+  GithubUserSearchApp.Client.Mock
 )
 
 ExUnit.start()

@@ -2,4 +2,50 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+@import url("https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap");
+
 /* This file is for your main application CSS */
+@layer base {
+  html {
+    font-family: "Space Mono", monospace;
+  }
+
+  .user-avatar {
+    grid-area: user-avatar;
+  }
+
+  .user-identity {
+    grid-area: user-identity;
+  }
+
+  .user-bio {
+    grid-area: user-bio;
+  }
+
+  .user-stats {
+    grid-area: user-stats;
+  }
+
+  .user-links {
+    grid-area: user-links;
+  }
+
+  .user-profile {
+    display: grid;
+    grid-template-areas:
+      "user-avatar user-identity user-identity"
+      "user-bio user-bio user-bio"
+      "user-stats user-stats user-stats"
+      "user-links user-links user-links";
+  }
+
+  @media (min-width: 1024px) {
+    .user-profile {
+      grid-template-areas:
+        "user-avatar user-identity user-identity"
+        "... user-bio user-bio"
+        "... user-stats user-stats"
+        "... user-links user-links";
+    }
+  }
+}
